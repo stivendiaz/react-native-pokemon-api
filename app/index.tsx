@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import {
   View,
   FlatList,
@@ -10,7 +10,6 @@ import {
   Text,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useContext } from 'react';
 import { PokemonContext } from '../context/PokemonContext';
 import PokemonListItem from '../components/PokemonListItem';
 import PokemonModal from '../components/PokemonModal';
@@ -23,34 +22,41 @@ const PokemonListScreen: React.FC = () => {
     pokemons,
     loading,
     error,
-    fetchPokemons,
+    fetchMorePokemons,
+    hasMore,
+    refreshPokemons,
   } = useContext(PokemonContext)!;
 
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [selectedPokemon, setSelectedPokemon] = React.useState<Pokemon | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
 
   const filteredPokemons = filterPokemons(pokemons, searchQuery);
 
+  const handleLoadMore = () => {
+    // Only load more if conditions are met
+    if (!loading && hasMore && searchQuery === '') {
+      fetchMorePokemons();
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Barra de Búsqueda dentro de SafeAreaView */}
       <SafeAreaView>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search a Pokemon..."
+          placeholder="Buscar Pokémon..."
           value={searchQuery}
           onChangeText={setSearchQuery}
           testID="search-input"
         />
       </SafeAreaView>
 
-      {/* Indicador de Carga */}
-      {loading && <ActivityIndicator testID="loading-indicator" style={styles.loading} />}
+      {loading && pokemons.length === 0 && (
+        <ActivityIndicator testID="loading-indicator" style={styles.loading} />
+      )}
 
-      {/* Mensaje de Error */}
       {error && <Text style={styles.error}>{error}</Text>}
 
-      {/* Lista de Pokémon */}
       <FlatList
         data={filteredPokemons}
         keyExtractor={(item) => item.name}
@@ -61,9 +67,17 @@ const PokemonListScreen: React.FC = () => {
           />
         )}
         contentContainerStyle={styles.listContainer}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        refreshing={loading && pokemons.length > 0}
+        onRefresh={refreshPokemons}
+        ListFooterComponent={
+          loading && hasMore && pokemons.length > 0 ? (
+            <ActivityIndicator style={{ margin: 20 }} />
+          ) : null
+        }
       />
 
-      {/* Modal para Mostrar Detalles del Pokémon Seleccionado */}
       <Modal visible={!!selectedPokemon} transparent animationType="slide">
         {selectedPokemon && (
           <PokemonModal
@@ -73,10 +87,9 @@ const PokemonListScreen: React.FC = () => {
         )}
       </Modal>
 
-      {/* Botón Flotante para Refrescar la Lista de Pokémon */}
       <TouchableOpacity
         style={styles.fab}
-        onPress={fetchPokemons}
+        onPress={refreshPokemons}
         testID="refresh-button"
       >
         <Ionicons name="refresh" size={24} color="#FFF" />
@@ -86,6 +99,7 @@ const PokemonListScreen: React.FC = () => {
 };
 
 export default PokemonListScreen;
+
 
 const styles = StyleSheet.create({
   container: {

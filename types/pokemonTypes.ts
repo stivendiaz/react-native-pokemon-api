@@ -1,4 +1,3 @@
-// types/pokemonTypes.ts
 export interface PokemonType {
     slot: number;
     type: {

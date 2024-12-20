@@ -1,12 +1,10 @@
-// types/PokemonContextTypes.ts
-import { Pokemon } from '../types/pokemonTypes';
+import { Pokemon } from './pokemonTypes';
 
-export interface PokemonContextType {
+export type PokemonContextType = {
   pokemons: Pokemon[];
   loading: boolean;
   error: string | null;
-  selectedPokemon: Pokemon | null;
-  fetchPokemons: () => void;
-  selectPokemon: (pokemon: Pokemon) => void;
-  deselectPokemon: () => void;
-}
+  fetchMorePokemons: (initial?: boolean) => Promise<void>;
+  hasMore: boolean;
+  refreshPokemons: () => void;
+};

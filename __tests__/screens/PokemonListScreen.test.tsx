@@ -1,4 +1,3 @@
-// __tests__/screens/PokemonListScreen.test.tsx
 import React from 'react';
 import { render, fireEvent, waitFor, within } from '@testing-library/react-native';
 import PokemonListScreen from '../../app/index';
@@ -37,57 +36,36 @@ const mockPokemons: Pokemon[] = [
     name: 'bulbasaur',
     weight: 69,
     height: 7,
-    types: [{
-        type: {
-            name: 'grass',
-            url: ''
-        },
-        slot: 0
-    }, {
-        type: {
-            name: 'poison',
-            url: ''
-        },
-        slot: 0
-    }],
+    types: [
+      { type: { name: 'grass', url: '' }, slot: 0 },
+      { type: { name: 'poison', url: '' }, slot: 0 }
+    ],
     sprites: { front_default: 'https://example.com/bulbasaur.png' },
   },
   {
     name: 'ivysaur',
     weight: 130,
     height: 10,
-    types: [{
-        type: {
-            name: 'grass',
-            url: ''
-        },
-        slot: 0
-    }, {
-        type: {
-            name: 'poison',
-            url: ''
-        },
-        slot: 0
-    }],
+    types: [
+      { type: { name: 'grass', url: '' }, slot: 0 },
+      { type: { name: 'poison', url: '' }, slot: 0 }
+    ],
     sprites: { front_default: 'https://example.com/ivysaur.png' },
   },
   {
     name: 'charmander',
     weight: 85,
     height: 6,
-    types: [{
-        type: {
-            name: 'fire',
-            url: ''
-        },
-        slot: 0
-    }],
+    types: [
+      { type: { name: 'fire', url: '' }, slot: 0 }
+    ],
     sprites: { front_default: 'https://example.com/charmander.png' },
   },
 ];
 
 describe('PokemonListScreen', () => {
-  const mockFetchPokemons = jest.fn();
+  const mockFetchMorePokemons = jest.fn();
+  const mockRefreshPokemons = jest.fn();
 
   const renderWithContext = (props?: Partial<React.ContextType<typeof PokemonContext>>) => {
     return render(
@@ -96,7 +74,9 @@ describe('PokemonListScreen', () => {
           pokemons: mockPokemons,
           loading: false,
           error: null,
-          fetchPokemons: mockFetchPokemons,
+          fetchMorePokemons: mockFetchMorePokemons,
+          refreshPokemons: mockRefreshPokemons,
+          hasMore: true,
           ...props,
         }}
       >
@@ -133,12 +113,12 @@ describe('PokemonListScreen', () => {
     });
   });
 
-  it('calls fetchPokemons when refresh button is pressed', () => {
+  it('calls refreshPokemons when refresh button is pressed', () => {
     const { getByTestId } = renderWithContext();
     const refreshButton = getByTestId('refresh-button');
 
     fireEvent.press(refreshButton);
-    expect(mockFetchPokemons).toHaveBeenCalled();
+    expect(mockRefreshPokemons).toHaveBeenCalled();
   });
 
   it('displays loading indicator when loading is true', () => {
@@ -168,16 +148,16 @@ describe('PokemonListScreen', () => {
     });
   });
 
-  // New test: Ensuring that Pokémon are displayed correctly after loading them from the API
   it('displays pokemons after loading them from the API', async () => {
-    // Initially loading is true, no pokemons
     const { rerender, getByTestId, queryByText } = render(
       <PokemonContext.Provider
         value={{
           pokemons: [],
           loading: true,
           error: null,
-          fetchPokemons: mockFetchPokemons,
+          fetchMorePokemons: mockFetchMorePokemons,
+          refreshPokemons: mockRefreshPokemons,
+          hasMore: true,
         }}
       >
         <PokemonListScreen />
@@ -196,7 +176,9 @@ describe('PokemonListScreen', () => {
           pokemons: mockPokemons,
           loading: false,
           error: null,
-          fetchPokemons: mockFetchPokemons,
+          fetchMorePokemons: mockFetchMorePokemons,
+          refreshPokemons: mockRefreshPokemons,
+          hasMore: true,
         }}
       >
         <PokemonListScreen />
@@ -211,7 +193,6 @@ describe('PokemonListScreen', () => {
     });
   });
 
-  // Additional explicit test: Testing the search engine functionality in isolation
   it('search engine filters the list when query changes', async () => {
     const { getByTestId, queryByText } = renderWithContext();
 

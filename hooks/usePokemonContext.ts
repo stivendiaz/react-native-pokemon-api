@@ -7,12 +7,7 @@ const usePokemonContext = (): PokemonContextType => {
   if (!context) {
     throw new Error('usePokemonContext should be used inside a PokemonProvider');
   }
-  return {
-    ...context,
-    selectedPokemon: null,
-    selectPokemon: () => {},
-    deselectPokemon: () => {},
-  };
+  return context;
 };
 
 export default usePokemonContext;
