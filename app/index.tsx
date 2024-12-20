@@ -59,7 +59,7 @@ const PokemonListScreen: React.FC = () => {
 
       <FlatList
         data={filteredPokemons}
-        keyExtractor={(item) => item.name}
+        keyExtractor={item => item.name}
         renderItem={({ item }) => (
           <PokemonListItem
             pokemon={item}
@@ -99,7 +99,6 @@ const PokemonListScreen: React.FC = () => {
 };
 
 export default PokemonListScreen;
-
 
 const styles = StyleSheet.create({
   container: {

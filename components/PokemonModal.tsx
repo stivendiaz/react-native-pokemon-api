@@ -21,8 +21,12 @@ const PokemonModal: React.FC<PokemonModalProps> = ({ pokemon, onClose }) => {
         <Text style={styles.title}>{pokemon.name}</Text>
         <Text>Weight: {pokemon.weight}</Text>
         <Text>Height: {pokemon.height}</Text>
-        <Text>Types: {pokemon.types.map((t) => t.type.name).join(', ')}</Text>
-        <TouchableOpacity onPress={onClose} style={styles.closeButton} testID="close-modal">
+        <Text>Types: {pokemon.types.map(t => t.type.name).join(', ')}</Text>
+        <TouchableOpacity
+          onPress={onClose}
+          style={styles.closeButton}
+          testID="close-modal"
+        >
           <Text style={styles.closeText}>Close</Text>
         </TouchableOpacity>
       </View>

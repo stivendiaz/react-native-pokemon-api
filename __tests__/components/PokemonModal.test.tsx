@@ -8,19 +8,21 @@ describe('PokemonModal', () => {
     name: 'charmander',
     weight: 85,
     height: 6,
-    types: [{
+    types: [
+      {
         type: {
-            name: 'fire',
-            url: ''
+          name: 'fire',
+          url: '',
         },
-        slot: 0
-    }],
+        slot: 0,
+      },
+    ],
     sprites: { front_default: 'https://example.com/charmander.png' },
   };
 
   it('displays pokemon details', () => {
     const { getByText, getByTestId } = render(
-      <PokemonModal pokemon={mockPokemon} onClose={jest.fn()} />
+      <PokemonModal pokemon={mockPokemon} onClose={jest.fn()} />,
     );
 
     expect(getByText('charmander')).toBeTruthy();
@@ -33,7 +35,7 @@ describe('PokemonModal', () => {
   it('calls onClose when close button is pressed', () => {
     const onCloseMock = jest.fn();
     const { getByTestId } = render(
-      <PokemonModal pokemon={mockPokemon} onClose={onCloseMock} />
+      <PokemonModal pokemon={mockPokemon} onClose={onCloseMock} />,
     );
 
     fireEvent.press(getByTestId('close-modal'));

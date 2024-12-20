@@ -8,7 +8,10 @@ interface PokemonListItemProps {
   onPress: () => void;
 }
 
-const PokemonListItem: React.FC<PokemonListItemProps> = ({ pokemon, onPress }) => {
+const PokemonListItem: React.FC<PokemonListItemProps> = ({
+  pokemon,
+  onPress,
+}) => {
   return (
     <TouchableOpacity
       style={styles.container}

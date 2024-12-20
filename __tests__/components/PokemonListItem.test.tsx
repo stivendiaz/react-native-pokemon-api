@@ -8,19 +8,21 @@ describe('PokemonListItem', () => {
     name: 'pikachu',
     weight: 60,
     height: 4,
-    types: [{
+    types: [
+      {
         type: {
-            name: 'electric',
-            url: ''
+          name: 'electric',
+          url: '',
         },
-        slot: 0
-    }],
+        slot: 0,
+      },
+    ],
     sprites: { front_default: 'https://example.com/pikachu.png' },
   };
 
   it('renders pokemon name and image', () => {
     const { getByText, getByTestId } = render(
-      <PokemonListItem pokemon={mockPokemon} onPress={jest.fn()} />
+      <PokemonListItem pokemon={mockPokemon} onPress={jest.fn()} />,
     );
 
     expect(getByText('pikachu')).toBeTruthy();
@@ -30,7 +32,7 @@ describe('PokemonListItem', () => {
   it('calls onPress when tapped', () => {
     const onPressMock = jest.fn();
     const { getByTestId } = render(
-      <PokemonListItem pokemon={mockPokemon} onPress={onPressMock} />
+      <PokemonListItem pokemon={mockPokemon} onPress={onPressMock} />,
     );
 
     fireEvent.press(getByTestId('pokemon-item-pikachu'));

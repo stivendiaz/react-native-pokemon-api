@@ -3,56 +3,64 @@ import { Pokemon } from '../../types/pokemonTypes';
 
 describe('filterPokemons', () => {
   const mockPokemons: Pokemon[] = [
-    { 
-      name: 'bulbasaur', 
-      weight: 69, 
-      height: 7, 
-      types: [{
+    {
+      name: 'bulbasaur',
+      weight: 69,
+      height: 7,
+      types: [
+        {
           type: {
-              name: 'grass',
-              url: ''
+            name: 'grass',
+            url: '',
           },
-          slot: 0
-      }, {
+          slot: 0,
+        },
+        {
           type: {
-              name: 'poison',
-              url: ''
+            name: 'poison',
+            url: '',
           },
-          slot: 0
-      }], 
-      sprites: {front_default: 'url-to-bulbasaur-image'}
+          slot: 0,
+        },
+      ],
+      sprites: { front_default: 'url-to-bulbasaur-image' },
     },
-    { 
-      name: 'ivysaur', 
-      weight: 130, 
-      height: 10, 
-      types: [{
+    {
+      name: 'ivysaur',
+      weight: 130,
+      height: 10,
+      types: [
+        {
           type: {
-              name: 'grass',
-              url: ''
+            name: 'grass',
+            url: '',
           },
-          slot: 0
-      }, {
+          slot: 0,
+        },
+        {
           type: {
-              name: 'poison',
-              url: ''
+            name: 'poison',
+            url: '',
           },
-          slot: 0
-      }], 
-      sprites: {front_default: 'url-to-ivysaur-image'}
+          slot: 0,
+        },
+      ],
+      sprites: { front_default: 'url-to-ivysaur-image' },
     },
-    { 
-      name: 'charmander', 
-      weight: 85, 
-      height: 6, 
-      types: [{
+    {
+      name: 'charmander',
+      weight: 85,
+      height: 6,
+      types: [
+        {
           type: {
-              name: 'fire',
-              url: ''
+            name: 'fire',
+            url: '',
           },
-          slot: 0
-      }], 
-      sprites: {front_default: 'url-to-charmander-image'}
+          slot: 0,
+        },
+      ],
+      sprites: { front_default: 'url-to-charmander-image' },
     },
   ];
 

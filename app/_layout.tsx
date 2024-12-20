@@ -30,7 +30,10 @@ export default function RootLayout() {
       <PokemonProvider>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" options={{ title: 'Page not found' }} />
+          <Stack.Screen
+            name="+not-found"
+            options={{ title: 'Page not found' }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </PokemonProvider>

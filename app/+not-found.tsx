@@ -22,19 +22,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   title: {
     fontSize: 24,
-    marginBottom: 20
+    marginBottom: 20,
   },
   button: {
     backgroundColor: '#EE1515',
     padding: 10,
-    borderRadius: 8
+    borderRadius: 8,
   },
   buttonText: {
     color: '#fff',
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
 });

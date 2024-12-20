@@ -17,11 +17,15 @@ const usePokemons = () => {
       setLoading(true);
       setError(null);
       try {
-        const { pokemons: initialPokemons, next } = await getPokemons(0, PAGE_SIZE);
+        const { pokemons: initialPokemons, next } = await getPokemons(
+          0,
+          PAGE_SIZE,
+        );
         setPokemons(initialPokemons);
         setOffset(PAGE_SIZE);
         if (!next) setHasMore(false);
       } catch (err) {
+        console.error(err);
         setError('Error fetching data');
       } finally {
         setLoading(false);
@@ -35,11 +39,15 @@ const usePokemons = () => {
     setLoading(true);
     setError(null);
     try {
-      const { pokemons: newPokemons, next } = await getPokemons(offset, PAGE_SIZE);
-      setPokemons((prev) => [...prev, ...newPokemons]);
-      setOffset((prev) => prev + PAGE_SIZE);
+      const { pokemons: newPokemons, next } = await getPokemons(
+        offset,
+        PAGE_SIZE,
+      );
+      setPokemons(prev => [...prev, ...newPokemons]);
+      setOffset(prev => prev + PAGE_SIZE);
       if (!next) setHasMore(false);
     } catch (err) {
+      console.error(err);
       setError('Error fetching data');
     } finally {
       setLoading(false);
@@ -51,18 +59,29 @@ const usePokemons = () => {
     setLoading(true);
     setError(null);
     try {
-      const { pokemons: refreshedPokemons, next } = await getPokemons(0, PAGE_SIZE);
+      const { pokemons: refreshedPokemons, next } = await getPokemons(
+        0,
+        PAGE_SIZE,
+      );
       setPokemons(refreshedPokemons);
       setOffset(PAGE_SIZE);
       if (!next) setHasMore(false);
     } catch (err) {
+      console.error(err);
       setError('Error fetching data');
     } finally {
       setLoading(false);
     }
   };
 
-  return { pokemons, loading, error, fetchMorePokemons, hasMore, refreshPokemons };
+  return {
+    pokemons,
+    loading,
+    error,
+    fetchMorePokemons,
+    hasMore,
+    refreshPokemons,
+  };
 };
 
 export default usePokemons;

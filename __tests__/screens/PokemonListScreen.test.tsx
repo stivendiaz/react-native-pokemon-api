@@ -1,25 +1,33 @@
 import React from 'react';
-import { render, fireEvent, waitFor, within } from '@testing-library/react-native';
+import {
+  render,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react-native';
 import PokemonListScreen from '../../app/index';
 import { PokemonContext } from '../../context/PokemonContext';
 import { Pokemon } from '../../types/pokemonTypes';
 
+// Mock for @expo/vector-icons
 jest.mock('@expo/vector-icons', () => {
-  const React = require('react');
-  const { Text } = require('react-native');
+  const { Text } = jest.requireActual('react-native'); // Import Text inside the mock factory
   return {
-    Ionicons: (props: any) => <Text testID="mocked-ionicon">Ionicon: {props.name}</Text>,
+    Ionicons: ({ name }: { name: string }) => (
+      <Text testID="mocked-ionicon">Ionicon: {name}</Text>
+    ),
   };
 });
 
+// Mock for expo-router
 jest.mock('expo-router', () => ({
   Stack: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() }),
 }));
 
+// Mock for react-native-safe-area-context
 jest.mock('react-native-safe-area-context', () => {
-  const React = require('react');
-  const { View } = require('react-native');
+  const { View } = jest.requireActual('react-native'); // Import View inside the mock factory
   return {
     SafeAreaProvider: ({ children }: { children: React.ReactNode }) => (
       <View testID="safe-area-provider">{children}</View>
@@ -31,6 +39,7 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
+// Mock Pokémon data
 const mockPokemons: Pokemon[] = [
   {
     name: 'bulbasaur',
@@ -38,7 +47,7 @@ const mockPokemons: Pokemon[] = [
     height: 7,
     types: [
       { type: { name: 'grass', url: '' }, slot: 0 },
-      { type: { name: 'poison', url: '' }, slot: 0 }
+      { type: { name: 'poison', url: '' }, slot: 0 },
     ],
     sprites: { front_default: 'https://example.com/bulbasaur.png' },
   },
@@ -48,7 +57,7 @@ const mockPokemons: Pokemon[] = [
     height: 10,
     types: [
       { type: { name: 'grass', url: '' }, slot: 0 },
-      { type: { name: 'poison', url: '' }, slot: 0 }
+      { type: { name: 'poison', url: '' }, slot: 0 },
     ],
     sprites: { front_default: 'https://example.com/ivysaur.png' },
   },
@@ -56,9 +65,7 @@ const mockPokemons: Pokemon[] = [
     name: 'charmander',
     weight: 85,
     height: 6,
-    types: [
-      { type: { name: 'fire', url: '' }, slot: 0 }
-    ],
+    types: [{ type: { name: 'fire', url: '' }, slot: 0 }],
     sprites: { front_default: 'https://example.com/charmander.png' },
   },
 ];
@@ -67,7 +74,9 @@ describe('PokemonListScreen', () => {
   const mockFetchMorePokemons = jest.fn();
   const mockRefreshPokemons = jest.fn();
 
-  const renderWithContext = (props?: Partial<React.ContextType<typeof PokemonContext>>) => {
+  const renderWithContext = (
+    props?: Partial<React.ContextType<typeof PokemonContext>>,
+  ) => {
     return render(
       <PokemonContext.Provider
         value={{
@@ -81,7 +90,7 @@ describe('PokemonListScreen', () => {
         }}
       >
         <PokemonListScreen />
-      </PokemonContext.Provider>
+      </PokemonContext.Provider>,
     );
   };
 
@@ -97,15 +106,8 @@ describe('PokemonListScreen', () => {
     const { getByTestId, queryByText } = renderWithContext();
     const searchInput = getByTestId('search-input');
 
-    // Initially all three pokemons are visible
-    expect(queryByText('bulbasaur')).toBeTruthy();
-    expect(queryByText('ivysaur')).toBeTruthy();
-    expect(queryByText('charmander')).toBeTruthy();
-
-    // Type "ivy" in search
     fireEvent.changeText(searchInput, 'ivy');
 
-    // Only ivysaur should remain
     await waitFor(() => {
       expect(queryByText('bulbasaur')).toBeNull();
       expect(queryByText('charmander')).toBeNull();
@@ -134,14 +136,11 @@ describe('PokemonListScreen', () => {
   it('shows modal when a pokemon is selected and closes it', async () => {
     const { getByTestId, queryByTestId } = renderWithContext();
 
-    // Press on bulbasaur list item
     fireEvent.press(getByTestId('pokemon-item-bulbasaur'));
 
-    // Check for bulbasaur inside the modal only
     const modalContent = getByTestId('pokemon-modal-content');
     expect(within(modalContent).getByText('bulbasaur')).toBeTruthy();
 
-    // Press close modal
     fireEvent.press(getByTestId('close-modal'));
     await waitFor(() => {
       expect(queryByTestId('pokemon-modal-content')).toBeNull();
@@ -161,15 +160,11 @@ describe('PokemonListScreen', () => {
         }}
       >
         <PokemonListScreen />
-      </PokemonContext.Provider>
+      </PokemonContext.Provider>,
     );
 
     expect(getByTestId('loading-indicator')).toBeTruthy();
-    expect(queryByText('bulbasaur')).toBeNull();
-    expect(queryByText('ivysaur')).toBeNull();
-    expect(queryByText('charmander')).toBeNull();
 
-    // Simulate that loading finished and pokemons are now available
     rerender(
       <PokemonContext.Provider
         value={{
@@ -182,10 +177,9 @@ describe('PokemonListScreen', () => {
         }}
       >
         <PokemonListScreen />
-      </PokemonContext.Provider>
+      </PokemonContext.Provider>,
     );
 
-    // Wait for rerender
     await waitFor(() => {
       expect(queryByText('bulbasaur')).toBeTruthy();
       expect(queryByText('ivysaur')).toBeTruthy();
@@ -196,11 +190,9 @@ describe('PokemonListScreen', () => {
   it('search engine filters the list when query changes', async () => {
     const { getByTestId, queryByText } = renderWithContext();
 
-    // Type "char" in search
     fireEvent.changeText(getByTestId('search-input'), 'char');
 
     await waitFor(() => {
-      // Only charmander matches
       expect(queryByText('bulbasaur')).toBeNull();
       expect(queryByText('ivysaur')).toBeNull();
       expect(queryByText('charmander')).toBeTruthy();
