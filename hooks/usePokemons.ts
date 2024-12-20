@@ -11,8 +11,8 @@ const usePokemons = () => {
   const [offset, setOffset] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
-  // Initial load effect with no dependencies: runs once
   useEffect(() => {
+    console.log('Initial fetch running');
     const initialFetch = async () => {
       setLoading(true);
       setError(null);
@@ -32,7 +32,7 @@ const usePokemons = () => {
       }
     };
     initialFetch();
-  }, []); // No dependencies, so this runs only once
+  }, []);
 
   const fetchMorePokemons = async () => {
     if (loading || !hasMore) return;
@@ -43,7 +43,12 @@ const usePokemons = () => {
         offset,
         PAGE_SIZE,
       );
-      setPokemons(prev => [...prev, ...newPokemons]);
+      setPokemons(prev => {
+        const uniquePokemons = Array.from(
+          new Map([...prev, ...newPokemons].map(p => [p.name, p])).values(),
+        );
+        return uniquePokemons;
+      });
       setOffset(prev => prev + PAGE_SIZE);
       if (!next) setHasMore(false);
     } catch (err) {
