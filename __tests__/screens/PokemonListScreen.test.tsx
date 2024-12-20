@@ -71,6 +71,19 @@ const mockPokemons: Pokemon[] = [
     }],
     sprites: { front_default: 'https://example.com/ivysaur.png' },
   },
+  {
+    name: 'charmander',
+    weight: 85,
+    height: 6,
+    types: [{
+        type: {
+            name: 'fire',
+            url: ''
+        },
+        slot: 0
+    }],
+    sprites: { front_default: 'https://example.com/charmander.png' },
+  },
 ];
 
 describe('PokemonListScreen', () => {
@@ -92,24 +105,124 @@ describe('PokemonListScreen', () => {
     );
   };
 
+  it('displays a list of pokemons', () => {
+    const { getByText, getByTestId } = renderWithContext();
+    expect(getByText('bulbasaur')).toBeTruthy();
+    expect(getByText('ivysaur')).toBeTruthy();
+    expect(getByText('charmander')).toBeTruthy();
+    expect(getByTestId('refresh-button')).toBeTruthy();
+  });
+
+  it('filters pokemons by search query', async () => {
+    const { getByTestId, queryByText } = renderWithContext();
+    const searchInput = getByTestId('search-input');
+
+    // Initially all three pokemons are visible
+    expect(queryByText('bulbasaur')).toBeTruthy();
+    expect(queryByText('ivysaur')).toBeTruthy();
+    expect(queryByText('charmander')).toBeTruthy();
+
+    // Type "ivy" in search
+    fireEvent.changeText(searchInput, 'ivy');
+
+    // Only ivysaur should remain
+    await waitFor(() => {
+      expect(queryByText('bulbasaur')).toBeNull();
+      expect(queryByText('charmander')).toBeNull();
+      expect(queryByText('ivysaur')).toBeTruthy();
+    });
+  });
+
+  it('calls fetchPokemons when refresh button is pressed', () => {
+    const { getByTestId } = renderWithContext();
+    const refreshButton = getByTestId('refresh-button');
+
+    fireEvent.press(refreshButton);
+    expect(mockFetchPokemons).toHaveBeenCalled();
+  });
+
+  it('displays loading indicator when loading is true', () => {
+    const { getByTestId } = renderWithContext({ loading: true, pokemons: [] });
+    expect(getByTestId('loading-indicator')).toBeTruthy();
+  });
+
+  it('displays error message if error is provided', () => {
+    const { getByText } = renderWithContext({ error: 'Error fetching data' });
+    expect(getByText('Error fetching data')).toBeTruthy();
+  });
+
   it('shows modal when a pokemon is selected and closes it', async () => {
     const { getByTestId, queryByTestId } = renderWithContext();
-  
+
     // Press on bulbasaur list item
     fireEvent.press(getByTestId('pokemon-item-bulbasaur'));
-  
-    // Now locate the modal content
-    const modalContent = getByTestId('pokemon-modal-content');
-  
+
     // Check for bulbasaur inside the modal only
+    const modalContent = getByTestId('pokemon-modal-content');
     expect(within(modalContent).getByText('bulbasaur')).toBeTruthy();
-  
+
     // Press close modal
     fireEvent.press(getByTestId('close-modal'));
-  
-    // Wait for the modal content to be removed
     await waitFor(() => {
       expect(queryByTestId('pokemon-modal-content')).toBeNull();
+    });
+  });
+
+  // New test: Ensuring that Pokémon are displayed correctly after loading them from the API
+  it('displays pokemons after loading them from the API', async () => {
+    // Initially loading is true, no pokemons
+    const { rerender, getByTestId, queryByText } = render(
+      <PokemonContext.Provider
+        value={{
+          pokemons: [],
+          loading: true,
+          error: null,
+          fetchPokemons: mockFetchPokemons,
+        }}
+      >
+        <PokemonListScreen />
+      </PokemonContext.Provider>
+    );
+
+    expect(getByTestId('loading-indicator')).toBeTruthy();
+    expect(queryByText('bulbasaur')).toBeNull();
+    expect(queryByText('ivysaur')).toBeNull();
+    expect(queryByText('charmander')).toBeNull();
+
+    // Simulate that loading finished and pokemons are now available
+    rerender(
+      <PokemonContext.Provider
+        value={{
+          pokemons: mockPokemons,
+          loading: false,
+          error: null,
+          fetchPokemons: mockFetchPokemons,
+        }}
+      >
+        <PokemonListScreen />
+      </PokemonContext.Provider>
+    );
+
+    // Wait for rerender
+    await waitFor(() => {
+      expect(queryByText('bulbasaur')).toBeTruthy();
+      expect(queryByText('ivysaur')).toBeTruthy();
+      expect(queryByText('charmander')).toBeTruthy();
+    });
+  });
+
+  // Additional explicit test: Testing the search engine functionality in isolation
+  it('search engine filters the list when query changes', async () => {
+    const { getByTestId, queryByText } = renderWithContext();
+
+    // Type "char" in search
+    fireEvent.changeText(getByTestId('search-input'), 'char');
+
+    await waitFor(() => {
+      // Only charmander matches
+      expect(queryByText('bulbasaur')).toBeNull();
+      expect(queryByText('ivysaur')).toBeNull();
+      expect(queryByText('charmander')).toBeTruthy();
     });
   });
 });
